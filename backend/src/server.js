@@ -1,0 +1,46 @@
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import otpRoutes from "./routes/otp.routes.js";
+import leadsRoutes from "./routes/leads.routes.js";
+import { cleanup } from "./store/otpStore.js";
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_ORIGIN || "http://localhost:8080",
+    methods: ["GET", "POST"],
+  })
+);
+
+// Request logger
+app.use((req, _res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
+// Routes
+app.use("/api/otp", otpRoutes);
+app.use("/api/leads", leadsRoutes);
+
+// Health check
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
+// Global error handler
+app.use((err, _req, res, _next) => {
+  console.error("Unhandled error:", err.message);
+  res.status(500).json({ success: false, error: "Internal server error" });
+});
+
+// Cleanup expired OTP entries every 60 seconds
+setInterval(cleanup, 60 * 1000);
+
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});

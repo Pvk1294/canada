@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+
+    --primary: 45 93% 47%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 40 15% 96%;
+    --secondary-foreground: 0 0% 8%;
+
+    --muted: 40 10% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 45 93% 47%;
+    --accent-foreground: 0 0% 5%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 10% 90%;
+    --input: 40 10% 90%;
+    --ring: 45 93% 47%;
+
+    --radius: 0.75rem;
+
+    --navy: 0 0% 5%;
+    --navy-light: 0 0% 10%;
+    --navy-medium: 0 0% 7%;
+    --blue: 45 93% 47%;
+    --blue-light: 45 90% 55%;
+    --blue-dark: 45 93% 40%;
+    --blue-glow: 45 100% 60%;
+    --gold: 45 93% 47%;
+    --green: 160 84% 39%;
+    --green-light: 160 70% 45%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(0, 0%, 3%) 0%, hsl(0, 0%, 8%) 40%, hsl(0, 0%, 12%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(45, 93%, 47%) 0%, hsl(45, 100%, 60%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(40, 20%, 98%) 100%);
+    --shadow-card: 0 4px 24px -4px hsla(0, 0%, 0%, 0.08);
+    --shadow-card-hover: 0 12px 40px -8px hsla(0, 0%, 0%, 0.15);
+    --shadow-primary: 0 8px 30px -4px hsla(45, 93%, 47%, 0.35);
+    --shadow-glow: 0 0 60px -12px hsla(45, 93%, 47%, 0.4);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 45 93% 47%;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 45 93% 50%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 45 93% 50%;
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 45 93% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+  
+  .glass-dark {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  .hover-lift:hover {
+    @apply -translate-y-1;
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .section-padding {
+    @apply py-24 md:py-32;
+  }
+  
+  .badge-glow {
+    @apply relative;
+  }
+  .badge-glow::after {
+    content: '';
+    @apply absolute inset-0 rounded-full opacity-0 transition-opacity duration-300;
+    background: var(--gradient-primary);
+    filter: blur(12px);
+    z-index: -1;
+  }
+  .badge-glow:hover::after {
+    @apply opacity-30;
+  }
+
+  .shimmer-button {
+    @apply relative overflow-hidden;
+  }
+  .shimmer-button::before {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, transparent, hsla(0, 0%, 100%, 0.15), transparent);
+    animation: shimmer 2.5s ease-in-out infinite;
+  }
+
+  .card-glow {
+    @apply relative;
+  }
+  .card-glow::before {
+    content: '';
+    @apply absolute -inset-px rounded-[inherit] opacity-0 transition-opacity duration-500;
+    background: linear-gradient(135deg, hsl(45, 93%, 47%), hsl(45, 100%, 65%), hsl(45, 93%, 47%));
+    z-index: -1;
+  }
+  .card-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(circle, hsla(45, 93%, 47%, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  .floating {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
