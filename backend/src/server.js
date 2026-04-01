@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const allowedOrigins = (process.env.FRONTEND_ORIGIN || "http://localhost:8080")
+const allowedOrigins = (process.env.FRONTEND_ORIGIN)
   .split(",")
   .map((o) => o.trim());
 
