@@ -6,59 +6,100 @@ import leadsRoutes from "./routes/leads.routes.js";
 import { cleanup } from "./store/otpStore.js";
 
 const app = express();
-const PORT = process.env.PORT;
-console.log("port being used", PORT)
 
-// Middleware
-const allowedOrigins = (process.env.FRONTEND_ORIGIN)
+/**
+ * ✅ PORT FIX
+ * DigitalOcean injects PORT at runtime
+ */
+const PORT = process.env.PORT || 8080;
+
+/**
+ * ✅ DEBUG (REMOVE LATER)
+ */
+console.log("ENV DEBUG:", {
+  PORT: process.env.PORT,
+  FRONTEND_ORIGIN: process.env.FRONTEND_ORIGIN,
+});
+
+/**
+ * ✅ SAFE CORS ORIGIN PARSING
+ * Prevent crash if env missing
+ */
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || "")
   .split(",")
-  .map((o) => o.trim());
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 console.log("Allowed CORS origins:", allowedOrigins);
 
+/**
+ * ✅ CORS SETUP
+ */
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // allow requests with no origin (mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-// Ensure preflight OPTIONS requests are handled for all routes
-app.options("*", cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+/**
+ * ✅ HANDLE PREFLIGHT
+ */
+app.options("*", cors());
 
+/**
+ * ✅ BODY PARSER
+ */
 app.use(express.json());
 
-// Request logger
+/**
+ * ✅ REQUEST LOGGER
+ */
 app.use((req, _res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
 });
 
-// Routes
+/**
+ * ✅ ROUTES
+ */
 app.use("/api/otp", otpRoutes);
 app.use("/api/leads", leadsRoutes);
 
-// Health check
+/**
+ * ✅ HEALTH CHECK
+ */
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// Global error handler
+/**
+ * ✅ GLOBAL ERROR HANDLER
+ */
 app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err.message);
-  res.status(500).json({ success: false, error: "Internal server error" });
+  res.status(500).json({ success: false, error: err.message || "Internal server error" });
 });
 
-// Cleanup expired OTP entries every 60 seconds
+/**
+ * ✅ CLEANUP JOB
+ */
 setInterval(cleanup, 60 * 1000);
 
+/**
+ * ✅ START SERVER
+ */
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
