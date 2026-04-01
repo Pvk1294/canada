@@ -3,6 +3,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Button } from "@/components/ui/button";
 import { Smartphone, Pencil, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiUrl } from "@/lib/api";
 
 interface Props {
   phone: string;
@@ -26,7 +27,7 @@ const PhoneVerifyStep = ({ phone, countryCode, onVerified, onEditPhone }: Props)
     setSending(true);
     setError("");
     try {
-      const res = await fetch("/api/otp/send", {
+      const res = await fetch(apiUrl("/api/otp/send"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, countryCode }),
@@ -68,7 +69,7 @@ const PhoneVerifyStep = ({ phone, countryCode, onVerified, onEditPhone }: Props)
       setVerifying(true);
       setError("");
       try {
-        const res = await fetch("/api/otp/verify", {
+        const res = await fetch(apiUrl("/api/otp/verify"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ phone, code, countryCode }),

@@ -10,9 +10,14 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
+
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || "http://localhost:8080")
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN || "http://localhost:8080",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   })
 );
@@ -42,5 +47,5 @@ app.use((err, _req, res, _next) => {
 setInterval(cleanup, 60 * 1000);
 
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { usePreApprovalForm } from "./PreApprovalFormContext";
+import { apiUrl } from "@/lib/api";
 import VehicleTypeStep from "./form-steps/VehicleTypeStep";
 import PersonalInfoStep from "./form-steps/PersonalInfoStep";
 import AddressStep from "./form-steps/AddressStep";
@@ -157,7 +158,7 @@ const PreApprovalDialog = () => {
         other_specify: form.otherSpecify || "",
       };
 
-      const res = await fetch("/api/leads/submit", {
+      const res = await fetch(apiUrl("/api/leads/submit"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(leadPayload),
