@@ -6,7 +6,8 @@ import leadsRoutes from "./routes/leads.routes.js";
 import { cleanup } from "./store/otpStore.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
+console.log("port being used", PORT)
 
 // Middleware
 const allowedOrigins = (process.env.FRONTEND_ORIGIN)
