@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Keyboard, Building2, ChevronDown, ChevronUp, Home } from "lucide-react";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyA9KRJT42aRxNa_ikT4F2uatuh0ruvLxg8";
+const GOOGLE_MAPS_API_KEY = "AIzaSyCQYCaVJJ9swpZM0Kl2g6mR36bvuCRDwMI";
 
 const provinces = ["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland & Labrador", "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"];
 
