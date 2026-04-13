@@ -20,29 +20,40 @@ interface Props {
 }
 
 const VehicleTypeStep = ({ value, onChange }: Props) => (
-  <div>
-    <h3 className="text-lg sm:text-xl font-extrabold text-foreground text-center mb-4">
-      What type of car are you looking to buy?
-    </h3>
-    <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+  <div className="space-y-4">
+    <div className="text-center">
+      <h3 className="text-[1.7rem] sm:text-[1.95rem] font-extrabold text-foreground leading-tight text-balance">
+        What type of vehicle are you looking for?
+      </h3>
+      <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+        Pick the body style you want and we’ll match you with the best approval options.
+      </p>
+    </div>
+    <div className="grid grid-cols-2 gap-3 sm:gap-4">
       {vehicles.map((v) => (
         <button
           key={v.id}
           type="button"
           onClick={() => onChange(v.id)}
-          className={`relative rounded-xl border-2 p-2 sm:p-3 md:p-4 cursor-pointer transition-all text-center hover:shadow-md ${
+          className={`group relative min-h-[168px] sm:min-h-[188px] rounded-2xl border bg-gradient-to-b from-white to-muted/30 px-3 py-4 sm:px-4 sm:py-5 cursor-pointer text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
             value === v.id
-              ? "border-green bg-green/5 shadow-md"
-              : "border-border hover:border-primary/30"
+              ? "border-primary bg-primary/5 shadow-[0_16px_40px_-24px_hsl(var(--primary)/0.6)]"
+              : "border-border/80 hover:border-primary/40"
           }`}
         >
           {v.popular && (
-            <span className="absolute top-2 right-2 bg-primary text-primary-foreground text-[9px] font-bold px-2 py-0.5 rounded-full">
+            <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold text-primary-foreground shadow-sm">
               Popular
             </span>
           )}
-          <img src={v.img} alt={v.label} className="w-full h-16 sm:h-20 md:h-24 object-contain mb-2" />
-          <p className="text-xs sm:text-sm font-semibold text-foreground">{v.label}</p>
+          <div className="flex h-full flex-col items-center justify-center">
+            <img
+              src={v.img}
+              alt={v.label}
+              className="w-full h-20 sm:h-24 object-contain mb-4 transition-transform duration-300 group-hover:scale-105"
+            />
+            <p className="text-sm sm:text-[15px] font-semibold text-foreground leading-snug">{v.label}</p>
+          </div>
         </button>
       ))}
     </div>

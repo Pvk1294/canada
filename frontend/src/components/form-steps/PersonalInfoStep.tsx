@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
-  form: { fullName: string; phone: string; email: string; countryCode: string };
+  form: { fullName: string; phone: string; email: string; countryCode: string; maritalStatus?: string };
   update: (field: string, value: string) => void;
 }
 
@@ -15,6 +15,8 @@ const COUNTRY_CODES = [
   { value: "33", label: "🇫🇷 +33", desc: "France" },
   { value: "49", label: "🇩🇪 +49", desc: "Germany" },
 ];
+
+const maritalStatuses = ["Single", "Married", "Common-Law", "Divorced", "Separated", "Widowed"];
 
 const PersonalInfoStep = ({ form, update }: Props) => {
   const phoneDigits = form.phone.replace(/\D/g, "");
@@ -66,6 +68,19 @@ const PersonalInfoStep = ({ form, update }: Props) => {
         <div>
           <Label htmlFor="em" className="text-[11px] sm:text-xs font-semibold">Email Address</Label>
           <Input id="em" type="email" placeholder="you@email.com" value={form.email} onChange={(e) => update("email", e.target.value)} className="mt-1 h-10 sm:h-11 rounded-xl text-sm" />
+        </div>
+        <div>
+          <Label className="text-[11px] sm:text-xs font-semibold">Marital Status</Label>
+          <Select value={form.maritalStatus || ""} onValueChange={(value) => update("maritalStatus", value)}>
+            <SelectTrigger className="mt-1 h-10 sm:h-11 rounded-xl text-sm">
+              <SelectValue placeholder="Select marital status" />
+            </SelectTrigger>
+            <SelectContent>
+              {maritalStatuses.map((status) => (
+                <SelectItem key={status} value={status}>{status}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

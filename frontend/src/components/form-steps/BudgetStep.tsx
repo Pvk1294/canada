@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const budgetRanges = ["Under $200/mo", "$200 - $350/mo", "$350 - $500/mo", "$500 - $700/mo", "$700+/mo"];
+const budgetRanges = ["Under $300 monthly", "$300 - $450 monthly", "$450 - $600 monthly", "$600 - $800 monthly", "$800+ monthly"];
 const downPayments = ["$0", "Under $1,000", "$1,000 - $3,000", "$3,000 - $5,000", "$5,000+"];
 
 interface Props {

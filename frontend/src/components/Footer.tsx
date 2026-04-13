@@ -84,6 +84,7 @@ const Footer = () => {
               <li><a href="#why-us" className="hover:text-primary transition-colors">Why ApprovalOnSpot</a></li>
               <li><a href="#testimonials" className="hover:text-primary transition-colors">Testimonials</a></li>
               <li><a href="/contact" className="hover:text-primary transition-colors">Contact Us</a></li>
+              <li><a href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
 
@@ -124,6 +125,11 @@ const Footer = () => {
         <div className="border-t border-white/5 mt-12 pt-8 text-center">
           <p className="text-xs text-white/25">
             © {new Date().getFullYear()} Approvalonspot.ca. All Rights Reserved. Licensed dealership partnerships.
+          </p>
+          <p className="mt-3 text-xs text-white/40">
+            <a href="/privacy-policy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </a>
           </p>
           <p className="text-[10px] text-white/15 mt-1.5 max-w-2xl mx-auto">
             All offers subject to approved credit (O.A.C). Payments subject to bank approval. Terms &amp; conditions apply. Vehicle availability may vary. ApprovalOnSpot acts as a financing facilitator working with licensed dealerships across Canada.

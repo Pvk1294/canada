@@ -77,10 +77,12 @@ const PreApprovalDialog = () => {
     preferredContact: "",
     companyName: "",
     companyAddress: "",
+    jobPosition: "",
     profession: "",
     collegeName: "",
     workplaceName: "",
     retiredDepartment: "",
+    maritalStatus: "",
     otherSpecify: "",
   });
 
@@ -151,10 +153,12 @@ const PreApprovalDialog = () => {
         preferred_contact: form.preferredContact,
         company_name: form.companyName || "",
         company_address: form.companyAddress || "",
+        job_position: form.jobPosition || "",
         profession: form.profession || "",
         college_name: form.collegeName || "",
         workplace_name: form.workplaceName || "",
         retired_department: form.retiredDepartment || "",
+        marital_status: form.maritalStatus || "",
         other_specify: form.otherSpecify || "",
       };
 
@@ -189,8 +193,8 @@ const PreApprovalDialog = () => {
         dobDay: "", dobMonth: "", dobYear: "",
         creditScore: "", jobType: "", income: "", employer: "", yearsEmployed: "",
         monthlyBudget: "", downPayment: "", hasTrade: "", preferredContact: "",
-        companyName: "", companyAddress: "", profession: "", collegeName: "",
-        workplaceName: "", retiredDepartment: "", otherSpecify: "",
+        companyName: "", companyAddress: "", jobPosition: "", profession: "", collegeName: "",
+        workplaceName: "", retiredDepartment: "", maritalStatus: "", otherSpecify: "",
       });
     }, 300);
   };
@@ -211,7 +215,9 @@ const PreApprovalDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
       <DialogContent
-        className="w-[calc(100vw-0.5rem)] sm:w-[calc(100vw-1rem)] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl p-0 border-border bg-card gap-0"
+        className="hidden-scrollbar w-[calc(100vw-0.5rem)] sm:w-[calc(100vw-1rem)] max-w-lg max-h-[90vh] overflow-y-auto rounded-[1.75rem] border-border bg-card p-0 gap-0 shadow-2xl"
+        showCloseButton={step === 1 && !submitted}
+        closeButtonClassName="right-4 top-4 sm:right-5 sm:top-5 h-6 w-6 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white [&_svg]:h-3.5 [&_svg]:w-3.5"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogTitle className="sr-only">Get Pre-Approved</DialogTitle>
@@ -232,12 +238,16 @@ const PreApprovalDialog = () => {
         ) : (
           <>
             {/* Header */}
-            <div className="bg-foreground text-background px-4 py-3 sm:px-5 sm:py-4 rounded-t-2xl relative">
-              <p className="text-sm sm:text-base font-bold flex items-center gap-2">
-                ⭐ {STEP_HEADERS[step] || "Takes just"} <span className="text-lg sm:text-xl font-extrabold">60 seconds</span>
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <div className="h-2 flex-1 bg-white/20 rounded-full overflow-hidden">
+            <div className="bg-foreground text-background px-4 py-3 sm:px-5 sm:py-4 rounded-t-[1.75rem] relative">
+              <div className="pr-8">
+                <p className="text-sm sm:text-base font-bold flex items-center gap-2 leading-tight">
+                  <span className="text-primary">⭐</span>
+                  <span>{STEP_HEADERS[step] || "Takes just"}</span>
+                  <span className="text-lg sm:text-xl font-extrabold">60 seconds</span>
+                </p>
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="h-2.5 flex-1 bg-white/15 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
@@ -245,7 +255,7 @@ const PreApprovalDialog = () => {
                 </div>
               </div>
               {/* Step indicator */}
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-1.5">
                   {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                     <div
@@ -256,15 +266,15 @@ const PreApprovalDialog = () => {
                     />
                   ))}
                 </div>
-                <p className="text-xs opacity-80">Step {step} of {TOTAL_STEPS}</p>
+                <p className="text-[11px] opacity-75">Step {step} of {TOTAL_STEPS}</p>
               </div>
             </div>
 
             {/* Body */}
             <div className="p-4 sm:p-6">
               {/* Urgency Badge */}
-              <div className="flex justify-center mb-3">
-                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full px-3 py-1 text-xs font-semibold">
+              <div className="flex justify-center mb-4">
+                <span className="inline-flex items-center gap-1.5 bg-primary/8 text-primary border border-primary/15 rounded-full px-3.5 py-1.5 text-[11px] font-semibold shadow-sm">
                   <Flame className="h-3.5 w-3.5" />
                   Inventory Reset — Limited-Time Offers
                 </span>
@@ -322,15 +332,15 @@ const PreApprovalDialog = () => {
                   />
                   <label htmlFor="consent" className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed cursor-pointer">
                     I consent to a credit check and agree to the{" "}
-                    <a href="/contact" className="text-primary hover:underline font-medium">Terms & Privacy Policy</a>.
+                    <a href="/privacy-policy" className="text-primary hover:underline font-medium">Terms & Privacy Policy</a>.
                   </label>
                 </div>
               )}
 
               {/* Consent disclaimer */}
-              <p className="text-center text-[10px] sm:text-xs text-muted-foreground mt-3 leading-relaxed">
+              <p className="mx-auto max-w-md text-center text-[10px] sm:text-xs text-muted-foreground mt-4 leading-relaxed">
                 By continuing, you give consent for lenders to perform a credit check and for ApprovalOnSpot to share your information to help match you with the best auto-financing options. See our{" "}
-                <a href="/contact" className="text-primary hover:underline font-medium">Privacy Policy</a>.
+                <a href="/privacy-policy" className="text-primary hover:underline font-medium">Privacy Policy</a>.
               </p>
 
               {/* Navigation */}

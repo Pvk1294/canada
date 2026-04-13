@@ -28,6 +28,8 @@ interface Props {
     income: string;
     companyName?: string;
     companyAddress?: string;
+    jobPosition?: string;
+    yearsEmployed?: string;
     profession?: string;
     collegeName?: string;
     workplaceName?: string;
@@ -71,6 +73,18 @@ const EmploymentStep = ({ form, update }: Props) => {
             </div>
             <div>
               <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5">
+                <Briefcase className="h-3.5 w-3.5 text-primary" />
+                Job Position
+              </Label>
+              <Input
+                value={form.jobPosition || ""}
+                onChange={(e) => update("jobPosition", e.target.value)}
+                placeholder="e.g. Sales Associate"
+                className="mt-1 h-10 sm:h-11 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5 text-primary" />
                 Company Address <span className="text-destructive">*</span>
               </Label>
@@ -78,6 +92,18 @@ const EmploymentStep = ({ form, update }: Props) => {
                 value={form.companyAddress || ""}
                 onChange={(e) => update("companyAddress", e.target.value)}
                 placeholder="e.g. 123 Business St, Toronto, ON"
+                className="mt-1 h-10 sm:h-11 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-primary" />
+                How long have you worked there?
+              </Label>
+              <Input
+                value={form.yearsEmployed || ""}
+                onChange={(e) => update("yearsEmployed", e.target.value)}
+                placeholder="e.g. 2 years"
                 className="mt-1 h-10 sm:h-11 rounded-xl text-sm"
               />
             </div>

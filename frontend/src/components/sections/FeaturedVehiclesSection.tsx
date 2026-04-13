@@ -107,6 +107,12 @@ const FeaturedVehiclesSection = () => {
           <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-base md:text-lg">
             Explore our top picks. Get pre-approved today and drive home your dream car tomorrow.
           </p>
+          <p className="mt-4 text-sm md:text-base font-semibold text-foreground">
+            More 250+ vehicles to explore.{" "}
+            <a href="/contact" className="text-primary hover:underline">
+              Contact us
+            </a>
+          </p>
         </div>
 
         {/* Carousel container */}

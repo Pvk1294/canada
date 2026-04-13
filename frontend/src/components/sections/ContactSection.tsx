@@ -130,7 +130,10 @@ const ContactSection = () => {
                     />
                   </div>
                   <p className="text-[9px] sm:text-[11px] text-muted-foreground">
-                    By submitting this form, you agree to our Terms &amp; Privacy Policy.
+                    By submitting this form, you agree to our Terms &amp;{" "}
+                    <a href="/privacy-policy" className="text-primary hover:underline">
+                      Privacy Policy
+                    </a>.
                   </p>
                   <Button type="submit" className="w-full shimmer-button bg-primary text-primary-foreground hover:bg-blue-light rounded-full h-12 sm:h-14 font-bold text-sm sm:text-base min-h-[48px]" style={{ boxShadow: "var(--shadow-primary)" }}>
                     Send Message

@@ -1,4 +1,4 @@
-import { Star, Quote, ChevronDown, ChevronUp, MapPin, Car } from "lucide-react";
+import { Star, Quote, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import delivered1 from "@/assets/delivered-1.jpeg";
 import delivered2 from "@/assets/delivered-2.jpeg";
@@ -103,20 +103,14 @@ const TestimonialCard = ({ t, index }: { t: typeof testimonials[0]; index: numbe
       {/* Glass card */}
       <div className="relative bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl border border-white/[0.08] rounded-3xl overflow-hidden hover:border-primary/30 transition-all duration-500 hover:shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.3)]">
         {/* Image section */}
-        <div className="relative h-56 sm:h-64 overflow-hidden">
+        <div className="relative aspect-[4/5] overflow-hidden bg-black">
           <img
             src={t.image}
-            alt={`${t.name} with ${t.car}`}
-            className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-1000 ease-out"
+            alt={`${t.name} review photo`}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
           />
           {/* Sophisticated gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy))] via-[hsl(var(--navy)/0.3)] to-transparent" />
-          
-          {/* Floating vehicle badge */}
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10">
-            <Car className="h-3 w-3 text-primary" />
-            <span className="text-[11px] text-white/90 font-medium">{t.car}</span>
-          </div>
 
           {/* Stars overlay */}
           <div className="absolute top-4 left-4 flex items-center gap-0.5">
