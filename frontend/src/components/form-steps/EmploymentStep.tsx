@@ -1,8 +1,11 @@
-import { useEffect, useRef } from "react";
+/// <reference types="@types/google.maps" />
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Briefcase, Building2, GraduationCap, HardHat, FileText, User } from "lucide-react";
+import { Briefcase, Building2, GraduationCap, HardHat, FileText, User, MapPin } from "lucide-react";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyCQYCaVJJ9swpZM0Kl2g6mR36bvuCRDwMI";
 
 const jobTypes = [
   "Employed Full-Time",
@@ -38,6 +41,195 @@ interface Props {
   };
   update: (field: string, value: string) => void;
 }
+
+// ─── Company Address Autocomplete ───────────────────────────────────────────
+
+interface CompanyAddressInputProps {
+  value: string;
+  onChange: (val: string) => void;
+}
+
+const CompanyAddressInput = ({ value, onChange }: CompanyAddressInputProps) => {
+  const [searchValue, setSearchValue] = useState(value || "");
+  const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [noResults, setNoResults] = useState(false);
+  const [scriptReady, setScriptReady] = useState(false);
+
+  const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null);
+  const placesRef = useRef<google.maps.places.PlacesService | null>(null);
+  const dummyRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Load or reuse Google Maps script
+  useEffect(() => {
+    if ((window as any).google?.maps?.places) {
+      setScriptReady(true);
+      return;
+    }
+    const existing = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (existing) {
+      // Script tag exists but maps not ready yet — poll briefly
+      const interval = setInterval(() => {
+        if ((window as any).google?.maps?.places) {
+          setScriptReady(true);
+          clearInterval(interval);
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+    if (!GOOGLE_MAPS_API_KEY) return;
+    const callbackName = "__gmapsCallback_emp_" + Date.now();
+    (window as any)[callbackName] = () => {
+      setScriptReady(true);
+      delete (window as any)[callbackName];
+    };
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }, []);
+
+  // Init services once script is ready
+  useEffect(() => {
+    if (!scriptReady || !(window as any).google?.maps?.places) return;
+    autocompleteRef.current = new google.maps.places.AutocompleteService();
+    if (dummyRef.current) {
+      placesRef.current = new google.maps.places.PlacesService(dummyRef.current);
+    }
+  }, [scriptReady]);
+
+  const fetchPredictions = useCallback((input: string) => {
+    if (!autocompleteRef.current || input.length < 2) {
+      setPredictions([]);
+      setNoResults(false);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      autocompleteRef.current!.getPlacePredictions(
+        { input, componentRestrictions: { country: "ca" }, types: ["establishment", "geocode"] },
+        (results) => {
+          const limited = (results || []).slice(0, 5);
+          setPredictions(limited);
+          setNoResults(limited.length === 0 && input.length >= 2);
+          setShowDropdown(true);
+          setActiveIndex(-1);
+        }
+      );
+    }, 300);
+  }, []);
+
+  const handleSelect = (prediction: google.maps.places.AutocompletePrediction) => {
+    setShowDropdown(false);
+    if (!placesRef.current) {
+      setSearchValue(prediction.description);
+      onChange(prediction.description);
+      return;
+    }
+    placesRef.current.getDetails(
+      { placeId: prediction.place_id, fields: ["formatted_address"] },
+      (place) => {
+        const addr = place?.formatted_address || prediction.description;
+        setSearchValue(addr);
+        onChange(addr);
+      }
+    );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showDropdown || predictions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < predictions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : predictions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      handleSelect(predictions[activeIndex]);
+    } else if (e.key === "Escape") {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeIndex >= 0 && dropdownRef.current) {
+      const items = dropdownRef.current.querySelectorAll("[data-suggestion]");
+      items[activeIndex]?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
+
+  const formatSuggestion = (description: string) => {
+    const parts = description.split(",");
+    return { main: parts[0]?.trim() || description, sub: parts.slice(1).map(p => p.trim()).join(", ") };
+  };
+
+  return (
+    <div className="relative">
+      <div ref={dummyRef} style={{ display: "none" }} />
+      <div className="relative group">
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
+        <Input
+          ref={inputRef}
+          placeholder="Start typing company address…"
+          value={searchValue}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            onChange(e.target.value);
+            fetchPredictions(e.target.value);
+          }}
+          onFocus={() => predictions.length > 0 && setShowDropdown(true)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+          onKeyDown={handleKeyDown}
+          className="mt-1 h-10 sm:h-11 rounded-xl text-sm pl-9"
+          autoComplete="off"
+        />
+      </div>
+
+      {showDropdown && (predictions.length > 0 || noResults) && (
+        <div
+          ref={dropdownRef}
+          className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-xl shadow-xl overflow-hidden animate-fade-in"
+        >
+          {predictions.length > 0 ? (
+            predictions.map((p, i) => {
+              const { main, sub } = formatSuggestion(p.description);
+              return (
+                <button
+                  key={p.place_id}
+                  data-suggestion
+                  onMouseDown={() => handleSelect(p)}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`w-full text-left px-3 py-2.5 transition-colors flex items-start gap-2.5 border-b border-border/50 last:border-b-0
+                    ${activeIndex === i ? "bg-primary/5" : "hover:bg-muted/60"}`}
+                >
+                  <div className="mt-0.5 h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Building2 className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{main}</p>
+                    {sub && <p className="text-xs text-muted-foreground mt-0.5 truncate">{sub}</p>}
+                  </div>
+                </button>
+              );
+            })
+          ) : (
+            <div className="px-3 py-3 text-center">
+              <p className="text-sm text-muted-foreground">No results found</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── EmploymentStep ──────────────────────────────────────────────────────────
 
 const EmploymentStep = ({ form, update }: Props) => {
   const conditionalRef = useRef<HTMLInputElement>(null);
@@ -88,11 +280,9 @@ const EmploymentStep = ({ form, update }: Props) => {
                 <Building2 className="h-3.5 w-3.5 text-primary" />
                 Company Address <span className="text-destructive">*</span>
               </Label>
-              <Input
+              <CompanyAddressInput
                 value={form.companyAddress || ""}
-                onChange={(e) => update("companyAddress", e.target.value)}
-                placeholder="e.g. 123 Business St, Toronto, ON"
-                className="mt-1 h-10 sm:h-11 rounded-xl text-sm"
+                onChange={(val) => update("companyAddress", val)}
               />
             </div>
             <div>

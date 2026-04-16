@@ -108,7 +108,7 @@ const FeaturedVehiclesSection = () => {
             Explore our top picks. Get pre-approved today and drive home your dream car tomorrow.
           </p>
           <p className="mt-4 text-sm md:text-base font-semibold text-foreground">
-            More 250+ vehicles to explore.{" "}
+            More than 300+ vehicles to explore. Let's fit you in the best option.{" "}
             <a href="/contact" className="text-primary hover:underline">
               Contact us
             </a>

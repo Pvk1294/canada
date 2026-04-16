@@ -44,7 +44,7 @@ const isValidPostalCode = (value: string) =>
   /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(value);
 
 const AddressStep = ({ form, update }: Props) => {
-  const [manualMode, setManualMode] = useState(true);
+  const [manualMode, setManualMode] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -425,15 +425,13 @@ const AddressStep = ({ form, update }: Props) => {
         </div>
       )}
 
-      {/* Manual entry fallback (when no dropdown is showing) */}
-      {!form.address && !showDropdown && (
-        <button
-          onClick={() => setManualMode(true)}
-          className="text-xs text-primary hover:text-primary/80 hover:underline flex items-center gap-1.5 mx-auto mt-4 transition-colors"
-        >
-          <Keyboard className="h-3.5 w-3.5" /> Enter address manually
-        </button>
-      )}
+      {/* Manual entry — always visible */}
+      <button
+        onClick={() => setManualMode(true)}
+        className="text-xs text-primary hover:text-primary/80 hover:underline flex items-center gap-1.5 mx-auto mt-4 transition-colors"
+      >
+        <Keyboard className="h-3.5 w-3.5" /> Enter address manually
+      </button>
     </div>
   );
 };

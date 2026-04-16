@@ -227,9 +227,9 @@ const PreApprovalDialog = () => {
             <div className="w-16 h-16 rounded-full bg-green/10 flex items-center justify-center mx-auto mb-4">
               <Check className="h-8 w-8 text-green" />
             </div>
-            <h4 className="text-xl font-extrabold text-foreground mb-2">Application Submitted!</h4>
+            <h4 className="text-xl font-extrabold text-foreground mb-2">Congratulations! You Have Been Pre-Approved</h4>
             <p className="text-muted-foreground text-sm mb-6">
-              Thank you, {form.fullName}. We'll review and contact you within 24 hours.
+              Thank you, {form.fullName}. You would be contacted shortly within half an hour.
             </p>
             <Button onClick={handleClose} variant="outline" className="rounded-full">
               Close
