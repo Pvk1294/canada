@@ -154,7 +154,7 @@ const DeliveredSection = () => {
   const displayed = showAll ? testimonials : testimonials.slice(0, 6);
 
   return (
-    <section className="relative overflow-hidden py-24 md:py-32" style={{ background: "linear-gradient(180deg, hsl(0 0% 3%) 0%, hsl(0 0% 6%) 50%, hsl(0 0% 3%) 100%)" }}>
+    <section id="testimonials" className="relative overflow-hidden py-24 md:py-32" style={{ background: "linear-gradient(180deg, hsl(0 0% 3%) 0%, hsl(0 0% 6%) 50%, hsl(0 0% 3%) 100%)" }}>
       {/* Ambient background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(circle, hsl(var(--primary)), transparent 70%)" }} />

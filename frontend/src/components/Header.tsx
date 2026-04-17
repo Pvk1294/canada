@@ -2,6 +2,7 @@ import { Phone, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { usePreApprovalForm } from "@/components/PreApprovalFormContext";
 
 const PHONE_NUMBER = "tel:+17789177003";
@@ -15,13 +16,38 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
+const scrollToSection = (id: string) => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { openForm } = usePreApprovalForm();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handlePreApprove = () => {
     openForm();
     setMobileOpen(false);
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) return; // let normal links work as-is
+
+    e.preventDefault();
+    const sectionId = href.slice(1);
+    setMobileOpen(false);
+
+    if (location.pathname === "/") {
+      scrollToSection(sectionId);
+    } else {
+      navigate("/");
+      // Wait for home page to mount, then scroll
+      setTimeout(() => scrollToSection(sectionId), 100);
+    }
   };
 
   return (
@@ -34,7 +60,12 @@ const Header = () => {
 
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a key={link.label} href={link.href} className="text-sm text-white/60 hover:text-white transition-colors font-medium">
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
+              className="text-sm text-white/60 hover:text-white transition-colors font-medium"
+            >
               {link.label}
             </a>
           ))}
@@ -58,7 +89,12 @@ const Header = () => {
       {mobileOpen && (
         <div className="md:hidden bg-foreground/98 backdrop-blur-xl border-t border-white/5 px-4 pb-5">
           {navLinks.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => setMobileOpen(false)} className="block py-3 text-sm text-white/70 hover:text-white font-medium border-b border-white/5">
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
+              className="block py-3 text-sm text-white/70 hover:text-white font-medium border-b border-white/5"
+            >
               {link.label}
             </a>
           ))}
