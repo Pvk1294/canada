@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { apiUrl } from "@/lib/api";
 
 const WHATSAPP_URL = "https://wa.me/17789177003?text=Hi%2C%20I%27d%20like%20to%20get%20in%20touch.";
 const PHONE_NUMBER = "tel:+17789177003";
@@ -22,14 +23,27 @@ const ContactSection = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const update = (field: string, value: string) => setForm((p) => ({ ...p, [field]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.firstName.trim() || !form.email.trim()) return;
-    setSent(true);
-    toast({ title: "Message Sent! ✉️", description: "We'll get back to you shortly." });
+    setLoading(true);
+    try {
+      const res = await fetch(apiUrl("/api/contact/send"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send message.");
+      setSent(true);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,25 +118,26 @@ const ContactSection = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div><Label htmlFor="cf" className="text-[11px] sm:text-xs font-semibold">First Name *</Label><Input id="cf" placeholder="John" value={form.firstName} onChange={(e) => update("firstName", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
+                    <div><Label htmlFor="cf" className="text-[11px] sm:text-xs font-semibold">First Name *</Label><Input id="cf" required placeholder="John" value={form.firstName} onChange={(e) => update("firstName", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
                     <div><Label htmlFor="cl" className="text-[11px] sm:text-xs font-semibold">Last Name</Label><Input id="cl" placeholder="Doe" value={form.lastName} onChange={(e) => update("lastName", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div><Label htmlFor="ce" className="text-[11px] sm:text-xs font-semibold">Email *</Label><Input id="ce" type="email" placeholder="you@email.com" value={form.email} onChange={(e) => update("email", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
-                    <div><Label htmlFor="cp" className="text-[11px] sm:text-xs font-semibold">Phone</Label><Input id="cp" type="tel" placeholder="(778) 000-0000" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
+                    <div><Label htmlFor="ce" className="text-[11px] sm:text-xs font-semibold">Email *</Label><Input id="ce" type="email" required placeholder="you@email.com" value={form.email} onChange={(e) => update("email", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
+                    <div><Label htmlFor="cp" className="text-[11px] sm:text-xs font-semibold">Phone *</Label><Input id="cp" type="tel" required placeholder="(778) 000-0000" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm" /></div>
                   </div>
                   <div>
-                    <Label className="text-[11px] sm:text-xs font-semibold">Subject</Label>
-                    <Select value={form.subject} onValueChange={(v) => update("subject", v)}>
+                    <Label className="text-[11px] sm:text-xs font-semibold">Subject *</Label>
+                    <Select required value={form.subject} onValueChange={(v) => update("subject", v)}>
                       <SelectTrigger className="mt-1 sm:mt-1.5 h-10 sm:h-11 rounded-xl text-sm"><SelectValue placeholder="Select Subject" /></SelectTrigger>
                       <SelectContent>{subjects.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="cm" className="text-[11px] sm:text-xs font-semibold">Message</Label>
+                    <Label htmlFor="cm" className="text-[11px] sm:text-xs font-semibold">Message *</Label>
                     <textarea
                       id="cm"
                       rows={3}
+                      required
                       placeholder="Tell us about your situation..."
                       value={form.message}
                       onChange={(e) => update("message", e.target.value)}
@@ -135,8 +150,8 @@ const ContactSection = () => {
                       Privacy Policy
                     </a>.
                   </p>
-                  <Button type="submit" className="w-full shimmer-button bg-primary text-primary-foreground hover:bg-blue-light rounded-full h-12 sm:h-14 font-bold text-sm sm:text-base min-h-[48px]" style={{ boxShadow: "var(--shadow-primary)" }}>
-                    Send Message
+                  <Button type="submit" disabled={loading} className="w-full shimmer-button bg-primary text-primary-foreground hover:bg-blue-light rounded-full h-12 sm:h-14 font-bold text-sm sm:text-base min-h-[48px]" style={{ boxShadow: "var(--shadow-primary)" }}>
+                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…</> : "Send Message"}
                   </Button>
                 </form>
               )}

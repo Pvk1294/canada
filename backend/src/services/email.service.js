@@ -1,3 +1,69 @@
+export async function sendContactEmail(contact) {
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    const toEmail = process.env.CLIENT_EMAIL;
+    if (!apiKey || !toEmail) {
+      console.error("RESEND_API_KEY or CLIENT_EMAIL not configured");
+      return { success: false };
+    }
+
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #1e3a5f, #2563eb); padding: 24px; border-radius: 12px 12px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 22px;">New Contact Message!</h1>
+          <p style="color: #bfdbfe; margin: 8px 0 0;">Someone sent a message via the website contact form.</p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0;">
+          <h2 style="color: #1e3a5f; font-size: 16px; margin: 0 0 16px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Sender Details</h2>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 6px 0; color: #64748b; width: 140px;">Full Name</td><td style="padding: 6px 0; font-weight: bold;">${contact.firstName} ${contact.lastName || ""}</td></tr>
+            <tr><td style="padding: 6px 0; color: #64748b;">Email</td><td style="padding: 6px 0; font-weight: bold;">${contact.email}</td></tr>
+            <tr><td style="padding: 6px 0; color: #64748b;">Phone</td><td style="padding: 6px 0;">${contact.phone || "N/A"}</td></tr>
+          </table>
+
+          <h2 style="color: #1e3a5f; font-size: 16px; margin: 20px 0 16px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Message</h2>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 6px 0; color: #64748b; width: 140px;">Subject</td><td style="padding: 6px 0; font-weight: bold;">${contact.subject || "N/A"}</td></tr>
+          </table>
+          <div style="margin-top: 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; color: #1e293b; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${contact.message}</div>
+        </div>
+
+        <div style="background: #1e3a5f; padding: 16px 24px; border-radius: 0 0 12px 12px; text-align: center;">
+          <p style="color: #94a3b8; margin: 0; font-size: 12px;">Received at ${new Date().toLocaleString("en-CA", { timeZone: "America/Toronto" })}</p>
+        </div>
+      </div>
+    `;
+
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Contact Form <onboarding@resend.dev>",
+        to: [toEmail],
+        subject: `Contact: ${contact.subject || "New Message"} — ${contact.firstName} ${contact.lastName || ""}`.trim(),
+        html: emailHtml,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("Resend contact response:", res.status, JSON.stringify(data));
+
+    if (!res.ok) {
+      console.error(`Resend API error [${res.status}]:`, JSON.stringify(data));
+      return { success: false };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("Contact email service error:", err.message);
+    return { success: false };
+  }
+}
+
 export async function sendLeadEmail(lead) {
   try {
     const apiKey = process.env.RESEND_API_KEY;

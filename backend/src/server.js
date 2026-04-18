@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import otpRoutes from "./routes/otp.routes.js";
 import leadsRoutes from "./routes/leads.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
 import { cleanup } from "./store/otpStore.js";
 
 const app = express();
@@ -76,6 +77,7 @@ app.use((req, _res, next) => {
  */
 app.use("/api/otp", otpRoutes);
 app.use("/api/leads", leadsRoutes);
+app.use("/api/contact", contactRoutes);
 
 /**
  * ✅ HEALTH CHECK
