@@ -21,6 +21,7 @@ export async function sendLeadEmail(lead) {
             <tr><td style="padding: 6px 0; color: #64748b;">Phone</td><td style="padding: 6px 0; font-weight: bold;">${lead.phone || "N/A"}</td></tr>
             <tr><td style="padding: 6px 0; color: #64748b;">Email</td><td style="padding: 6px 0; font-weight: bold;">${lead.email || "N/A"}</td></tr>
             <tr><td style="padding: 6px 0; color: #64748b;">Date of Birth</td><td style="padding: 6px 0;">${lead.date_of_birth || "N/A"}</td></tr>
+            <tr><td style="padding: 6px 0; color: #64748b;">Marital Status</td><td style="padding: 6px 0;">${lead.marital_status || "N/A"}</td></tr>
           </table>
 
           <h2 style="color: #1e3a5f; font-size: 16px; margin: 20px 0 16px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Address</h2>
