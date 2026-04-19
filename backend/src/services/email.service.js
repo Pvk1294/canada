@@ -120,8 +120,6 @@ export async function sendLeadEmail(lead) {
             ${lead.other_specify ? `<tr><td style="padding: 6px 0; color: #64748b;">Other</td><td style="padding: 6px 0;">${lead.other_specify}</td></tr>` : ""}
           </table>
 
-          <h2 style="color: #1e3a5f; font-size: 16px; margin: 20px 0 16px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Contact Preference</h2>
-          <p style="margin: 0; font-weight: bold;">${lead.preferred_contact || "N/A"}</p>
         </div>
 
         <div style="background: #1e3a5f; padding: 16px 24px; border-radius: 0 0 12px 12px; text-align: center;">
