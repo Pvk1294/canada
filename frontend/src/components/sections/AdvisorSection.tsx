@@ -88,7 +88,7 @@ const AdvisorSection = () => {
                 <Button type="submit" className="w-full shimmer-button bg-primary text-primary-foreground hover:bg-blue-light rounded-full py-5 font-bold" style={{ boxShadow: "var(--shadow-primary)" }}>
                   Book My Call →
                 </Button>
-                <p className="text-[11px] text-muted-foreground text-center">No obligation · 100% free · No credit impact</p>
+                <p className="text-[11px] text-muted-foreground text-center">No obligation · 100% free </p>
               </form>
             )}
           </div>
