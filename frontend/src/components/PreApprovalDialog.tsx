@@ -382,7 +382,7 @@ const PreApprovalDialog = () => {
 
               <p className="text-[9px] sm:text-[10px] text-center text-muted-foreground mt-3 flex items-center justify-center gap-1.5">
                 <Lock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-green" />
-                256-bit SSL • 100% confidential • No impact on credit score
+                256-bit SSL • 100% confidential
               </p>
             </div>
           </>
