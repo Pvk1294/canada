@@ -112,6 +112,7 @@ export async function sendLeadEmail(lead) {
             <tr><td style="padding: 6px 0; color: #64748b;">Income</td><td style="padding: 6px 0;">${lead.income || "N/A"}</td></tr>
             <tr><td style="padding: 6px 0; color: #64748b;">Employer</td><td style="padding: 6px 0;">${lead.employer || "N/A"}</td></tr>
             ${lead.company_name ? `<tr><td style="padding: 6px 0; color: #64748b;">Company</td><td style="padding: 6px 0;">${lead.company_name}</td></tr>` : ""}
+            ${lead.years_employed ? `<tr><td style="padding: 6px 0; color: #64748b;">Time at Company</td><td style="padding: 6px 0;">${lead.years_employed}</td></tr>` : ""}
             ${lead.company_address ? `<tr><td style="padding: 6px 0; color: #64748b;">Company Address</td><td style="padding: 6px 0;">${lead.company_address}</td></tr>` : ""}
             ${lead.profession ? `<tr><td style="padding: 6px 0; color: #64748b;">Profession</td><td style="padding: 6px 0;">${lead.profession}</td></tr>` : ""}
             ${lead.college_name ? `<tr><td style="padding: 6px 0; color: #64748b;">College</td><td style="padding: 6px 0;">${lead.college_name}</td></tr>` : ""}
