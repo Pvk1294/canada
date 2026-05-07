@@ -1,59 +1,53 @@
-const OTP_DEV_BASE = "https://api.otp.dev/v1/verifications";
-const TEMPLATE_ID = "289f9817-dcd7-4f94-8080-b7f43871a623";
+function twilioAuthHeader() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  if (!accountSid) throw new Error("TWILIO_ACCOUNT_SID is not configured");
+  if (!authToken) throw new Error("TWILIO_AUTH_TOKEN is not configured");
+  return "Basic " + Buffer.from(`${accountSid}:${authToken}`).toString("base64");
+}
+
+function verifyServiceUrl(path = "") {
+  const serviceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
+  if (!serviceSid) throw new Error("TWILIO_VERIFY_SERVICE_SID is not configured");
+  return `https://verify.twilio.com/v2/Services/${serviceSid}${path}`;
+}
 
 export async function sendOTP(fullPhone) {
-  const apiKey = process.env.OTP_API_KEY;
-  if (!apiKey) throw new Error("OTP_API_KEY is not configured");
-
-  const res = await fetch(OTP_DEV_BASE, {
+  const res = await fetch(verifyServiceUrl("/Verifications"), {
     method: "POST",
     headers: {
-      "X-OTP-Key": apiKey,
-      "Accept": "application/json",
-      "Content-Type": "application/json",
+      Authorization: twilioAuthHeader(),
+      "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: JSON.stringify({
-      data: {
-        channel: "sms",
-        phone: fullPhone,
-        sender: "OTP Dev",
-        template: TEMPLATE_ID,
-        code_length: 4,
-      },
-    }),
+    body: new URLSearchParams({ To: fullPhone, Channel: "sms" }),
   });
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.error("OTP.dev send error:", JSON.stringify(data));
-    throw new Error(`OTP.dev API error [${res.status}]`);
+    console.error("Twilio send error:", JSON.stringify(data));
+    throw new Error(`Twilio Verify API error [${res.status}]`);
   }
 
   return data;
 }
 
 export async function verifyOTP(fullPhone, code) {
-  const apiKey = process.env.OTP_API_KEY;
-  if (!apiKey) throw new Error("OTP_API_KEY is not configured");
-
-  const url = `${OTP_DEV_BASE}?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(fullPhone)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
+  const res = await fetch(verifyServiceUrl("/VerificationCheck"), {
+    method: "POST",
     headers: {
-      "X-OTP-Key": apiKey,
-      "Accept": "application/json",
+      Authorization: twilioAuthHeader(),
+      "Content-Type": "application/x-www-form-urlencoded",
     },
+    body: new URLSearchParams({ To: fullPhone, Code: code }),
   });
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.error("OTP.dev verify error:", JSON.stringify(data));
+    console.error("Twilio verify error:", JSON.stringify(data));
     return { verified: false };
   }
 
-  const matches = Array.isArray(data?.data) ? data.data : [];
-  return { verified: matches.length > 0 };
+  return { verified: data.status === "approved" };
 }

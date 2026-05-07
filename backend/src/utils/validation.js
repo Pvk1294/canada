@@ -6,13 +6,13 @@ export function validatePhone(phone, countryCode) {
     return { valid: false, fullPhone: null, error: "Phone must be at least 10 digits" };
   }
 
-  return { valid: true, fullPhone: `${prefix}${digits}`, error: null };
+  return { valid: true, fullPhone: `+${prefix}${digits}`, error: null };
 }
 
 export function validateOTPCode(code) {
   const trimmed = String(code ?? "").trim();
-  if (!/^\d{4}$/.test(trimmed)) {
-    return { valid: false, error: "OTP must be exactly 4 digits" };
+  if (!/^\d{6}$/.test(trimmed)) {
+    return { valid: false, error: "OTP must be exactly 6 digits" };
   }
   return { valid: true, error: null };
 }

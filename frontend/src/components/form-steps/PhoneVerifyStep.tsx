@@ -61,9 +61,9 @@ const PhoneVerifyStep = ({ phone, countryCode, onVerified, onEditPhone }: Props)
     return () => clearTimeout(t);
   }, [cooldown]);
 
-  // Verify when 4 digits entered
+  // Verify when 6 digits entered
   useEffect(() => {
-    if (code.length !== 4) return;
+    if (code.length !== 6) return;
 
     const verify = async () => {
       setVerifying(true);
@@ -112,7 +112,7 @@ const PhoneVerifyStep = ({ phone, countryCode, onVerified, onEditPhone }: Props)
         Verify Your Phone
       </h3>
       <p className="text-xs sm:text-sm text-muted-foreground mb-1">
-        {sending ? "Sending verification code..." : "We sent a 4-digit code to"}
+        {sending ? "Sending verification code..." : "We sent a 6-digit code to"}
       </p>
       <div className="flex items-center justify-center gap-1.5 mb-5">
         <span className="font-semibold text-foreground text-sm">{maskedPhone}</span>
@@ -125,12 +125,14 @@ const PhoneVerifyStep = ({ phone, countryCode, onVerified, onEditPhone }: Props)
       </div>
 
       <div className="flex justify-center mb-3">
-        <InputOTP maxLength={4} value={code} onChange={setCode} disabled={verifying || sending}>
+        <InputOTP maxLength={6} value={code} onChange={setCode} disabled={verifying || sending}>
           <InputOTPGroup>
             <InputOTPSlot index={0} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
             <InputOTPSlot index={1} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
             <InputOTPSlot index={2} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
             <InputOTPSlot index={3} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
+            <InputOTPSlot index={4} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
+            <InputOTPSlot index={5} className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-lg sm:text-xl font-bold rounded-xl" />
           </InputOTPGroup>
         </InputOTP>
       </div>
