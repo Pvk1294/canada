@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Check, Lock, Flame, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { usePreApprovalForm } from "./PreApprovalFormContext";
 import { apiUrl } from "@/lib/api";
@@ -13,9 +12,8 @@ import DateOfBirthStep from "./form-steps/DateOfBirthStep";
 import CreditStep from "./form-steps/CreditStep";
 import EmploymentStep from "./form-steps/EmploymentStep";
 import BudgetStep from "./form-steps/BudgetStep";
-import PhoneVerifyStep from "./form-steps/PhoneVerifyStep";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 const STEP_HEADERS: Record<number, string> = {
   1: "Let's get started!",
@@ -25,7 +23,6 @@ const STEP_HEADERS: Record<number, string> = {
   5: "How's your credit?",
   6: "Employment info",
   7: "Your budget",
-  8: "Just one more step!",
 };
 
 const isAtLeast18 = (day: string, month: string, year: string) => {
@@ -51,7 +48,6 @@ const PreApprovalDialog = () => {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [consentChecked, setConsentChecked] = useState(false);
   const { toast } = useToast();
 
   const [form, setForm] = useState({
@@ -103,7 +99,6 @@ const PreApprovalDialog = () => {
       case 5: return !!form.creditScore;
       case 6: return !!form.jobType && !!form.income;
       case 7: return !!form.monthlyBudget;
-      case 8: return true;
       default: return false;
     }
   }, [step, form]);
@@ -115,7 +110,7 @@ const PreApprovalDialog = () => {
       clearTimeout(advanceTimerRef.current);
       advanceTimerRef.current = null;
     }
-    if (autoAdvanceSteps.has(step) && canNext() && step !== 8) {
+    if (autoAdvanceSteps.has(step) && canNext() && step !== TOTAL_STEPS) {
       advanceTimerRef.current = setTimeout(() => {
         setStep(step + 1);
       }, 400);
@@ -187,7 +182,6 @@ const PreApprovalDialog = () => {
     setTimeout(() => {
       setStep(1);
       setSubmitted(false);
-      setConsentChecked(false);
       setForm({
         vehicleType: "", fullName: "", phone: "", email: "", countryCode: "1", address: "", postalCode: "", province: "",
         dobDay: "", dobMonth: "", dobYear: "",
@@ -200,12 +194,12 @@ const PreApprovalDialog = () => {
   };
 
   const handleNext = () => {
-    if (step < TOTAL_STEPS) setStep(step + 1);
+    if (step < TOTAL_STEPS) {
+      setStep(step + 1);
+    } else {
+      handleSubmit();
+    }
   };
-
-  const handleOTPVerified = useCallback(() => {
-    handleSubmit();
-  }, [form]);
 
   const isAutoAdvance = autoAdvanceSteps.has(step);
 
@@ -311,31 +305,7 @@ const PreApprovalDialog = () => {
                 {step === 5 && <CreditStep value={form.creditScore} onChange={(v) => update("creditScore", v)} />}
                 {step === 6 && <EmploymentStep form={form} update={update} />}
                 {step === 7 && <BudgetStep form={form} update={update} />}
-                {step === 8 && (
-                  <PhoneVerifyStep
-                    phone={form.phone}
-                    countryCode={form.countryCode}
-                    onVerified={handleOTPVerified}
-                    onEditPhone={() => setStep(2)}
-                  />
-                )}
               </div>
-
-              {/* Consent checkbox (visible on OTP step) */}
-              {step === 8 && (
-                <div className="flex items-start gap-2 mt-4 p-3 rounded-xl bg-muted/50 border border-border">
-                  <Checkbox
-                    id="consent"
-                    checked={consentChecked}
-                    onCheckedChange={(checked) => setConsentChecked(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor="consent" className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed cursor-pointer">
-                    I consent to a credit check and agree to the{" "}
-                    <a href="/privacy-policy" className="text-primary hover:underline font-medium">Terms & Privacy Policy</a>.
-                  </label>
-                </div>
-              )}
 
               {/* Consent disclaimer */}
               <p className="mx-auto max-w-md text-center text-[10px] sm:text-xs text-muted-foreground mt-4 leading-relaxed">
@@ -345,7 +315,7 @@ const PreApprovalDialog = () => {
 
               {/* Navigation */}
               <div className="flex items-center gap-3 mt-5">
-                {step > 1 && step !== 8 && (
+                {step > 1 && (
                   <Button
                     variant="outline"
                     onClick={() => setStep(step - 1)}
@@ -354,7 +324,7 @@ const PreApprovalDialog = () => {
                     Back
                   </Button>
                 )}
-                {!isAutoAdvance && step !== 8 && (
+                {!isAutoAdvance && (
                   <Button
                     onClick={handleNext}
                     disabled={!canNext() || submitting}
@@ -363,17 +333,14 @@ const PreApprovalDialog = () => {
                   >
                     {submitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : step === TOTAL_STEPS ? (
+                      "Submit →"
                     ) : (
                       "Continue →"
                     )}
                   </Button>
                 )}
                 {isAutoAdvance && submitting && (
-                  <div className="flex-1 flex justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                  </div>
-                )}
-                {step === 8 && submitting && (
                   <div className="flex-1 flex justify-center py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
                   </div>

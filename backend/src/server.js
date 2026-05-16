@@ -1,10 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import otpRoutes from "./routes/otp.routes.js";
 import leadsRoutes from "./routes/leads.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
-import { cleanup } from "./store/otpStore.js";
 
 const app = express();
 
@@ -75,7 +73,6 @@ app.use((req, _res, next) => {
 /**
  * ✅ ROUTES
  */
-app.use("/api/otp", otpRoutes);
 app.use("/api/leads", leadsRoutes);
 app.use("/api/contact", contactRoutes);
 
@@ -93,11 +90,6 @@ app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err.message);
   res.status(500).json({ success: false, error: err.message || "Internal server error" });
 });
-
-/**
- * ✅ CLEANUP JOB
- */
-setInterval(cleanup, 60 * 1000);
 
 /**
  * ✅ START SERVER
